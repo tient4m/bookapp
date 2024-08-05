@@ -46,6 +46,9 @@ public class WebSecurityConfig {
                             .requestMatchers(
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
+                                    String.format("%s/products/recommendedForGuest", apiPrefix),
+                                    String.format("%s/submitOrder", apiPrefix),
+                                    String.format("%s/vnpay-payment", apiPrefix),
                                     //healthcheck
                                     String.format("%s/healthcheck/**", apiPrefix),
                                     //swagger

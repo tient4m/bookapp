@@ -1,6 +1,7 @@
 package com.project.shopapp.services.product;
 import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
+import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.responses.product.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,4 +31,5 @@ public interface IProductService {
     Product unlikeProduct(Long userId, Long productId) throws Exception;
     List<ProductResponse> findFavoriteProductsByUserId(Long userId) throws Exception;
     void generateFakeLikes() throws Exception;
+    List<ProductResponse> findAllRecommendedBooks(String token) throws DataNotFoundException;
 }

@@ -1,11 +1,13 @@
 package com.project.shopapp.services.product;
 
 import com.github.javafaker.Faker;
+import com.project.shopapp.components.JwtTokenUtils;
 import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.exceptions.InvalidParamException;
 import com.project.shopapp.models.*;
+import com.project.shopapp.recommender.CollaborativeFilteringRecommender;
 import com.project.shopapp.repositories.*;
 import com.project.shopapp.responses.product.ProductResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,8 @@ public class ProductService implements IProductService{
     private final CategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
     private final FavoriteRepository favoriteRepository;
+    private final CollaborativeFilteringRecommender collaborativeFilteringRecommender;
+    private final JwtTokenUtils jwtTokenUtils;
     @Override
     @Transactional
     public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
@@ -236,5 +240,28 @@ public class ProductService implements IProductService{
                 favorites.clear();
             }
         }
+    }
+    @Override
+    public List<ProductResponse> findAllRecommendedBooks(String token) throws DataNotFoundException {
+        List<Product> products = new ArrayList<>();
+        if (token == null) {
+            products = productRepository.findTop10ByOrderByRateDesc();
+            return products.stream()
+                    .map(ProductResponse::fromProduct)
+                    .collect(Collectors.toList());
+        }
+        String extractedToken = token.substring(7);
+        User currentUser = userRepository.findByPhoneNumber(jwtTokenUtils.extractPhoneNumber(extractedToken))
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with token: " + extractedToken));
+        products = collaborativeFilteringRecommender.recommendedBooks(currentUser.getId());
+//        if (books.size() < MIN_OF_RECOMMENDED_BOOKS) {
+//            books.addAll(getDao().findAllBooksByCategoriesAndLimit(
+//                    userReadingInfoService.findUserReadingInfo().getUserBookCategories().stream().map(
+//                            userBookCategoryDto -> userBookCategoryDto.getCategory().getName()
+//                    ).collect(Collectors.toList()), MIN_OF_RECOMMENDED_BOOKS - books.size()));
+//        }
+        return products.stream()
+                .map(ProductResponse::fromProduct)
+                .collect(Collectors.toList());
     }
 }

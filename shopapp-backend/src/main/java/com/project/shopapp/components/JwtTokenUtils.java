@@ -118,4 +118,7 @@ public class JwtTokenUtils {
 
         return false;
     }
+    public String extractPhoneNumber(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 }

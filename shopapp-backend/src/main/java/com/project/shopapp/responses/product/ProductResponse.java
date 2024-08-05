@@ -26,6 +26,7 @@ public class ProductResponse extends BaseResponse {
     private Float price;
     private String thumbnail;
     private String description;
+    private Float rate;
     // Thêm trường totalPages
     private int totalPages;
 
@@ -56,6 +57,7 @@ public class ProductResponse extends BaseResponse {
                 .description(product.getDescription())
                 .categoryId(product.getCategory().getId())
                 .productImages(product.getProductImages())
+                .rate(product.getRate())
                 .totalPages(0)
                 .build();
         productResponse.setCreatedAt(product.getCreatedAt());
