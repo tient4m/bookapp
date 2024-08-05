@@ -15,7 +15,7 @@ import java.util.*;
 @Component
 public class CollaborativeFilteringRecommender {
 
-    private static final int NUM_NEIGHBOURHOODS = 10;
+    private static final int NUM_NEIGHBOURHOODS = 12;
     private static final int NUM_RECOMMENDATIONS = 20;
     private static final int MIN_VALUE_RECOMMENDATION = 4;
 

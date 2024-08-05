@@ -372,7 +372,11 @@ public class ProductController {
     public ResponseEntity<?> getRecommendedProducts(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             List<ProductResponse> recommendedProducts = productService.findAllRecommendedBooks(authorizationHeader);
-            return ResponseEntity.ok(recommendedProducts);
+            return ResponseEntity.ok(ResponseObject.builder()
+                    .data(recommendedProducts)
+                    .message("Get recommended products successfully")
+                    .status(HttpStatus.OK)
+                    .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -382,7 +386,11 @@ public class ProductController {
     public ResponseEntity<?> getRecommendedProducts() {
         try {
             List<ProductResponse> recommendedProducts = productService.findAllRecommendedBooks(null);
-            return ResponseEntity.ok(recommendedProducts);
+            return ResponseEntity.ok(ResponseObject.builder()
+                    .data(recommendedProducts)
+                    .message("Get recommended products successfully")
+                    .status(HttpStatus.OK)
+                    .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

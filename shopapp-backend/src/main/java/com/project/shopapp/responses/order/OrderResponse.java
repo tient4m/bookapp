@@ -67,6 +67,7 @@ public class OrderResponse {
         List<OrderDetailResponse> orderDetailResponses = orderDetails
                 .stream()
                 .map(orderDetail -> OrderDetailResponse.fromOrderDetail(orderDetail)).toList();
+
         OrderResponse orderResponse =  OrderResponse
                 .builder()
                 .id(order.getId())

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Product } from '../models/product';
@@ -44,7 +44,7 @@ export class ProductService {
   }
   updateProduct(productId: number, updatedProduct: UpdateProductDTO): Observable<ApiResponse> {
     return this.http.put<ApiResponse>(`${this.apiBaseUrl}/products/${productId}`, updatedProduct);
-  }  
+  }
   insertProduct(insertProductDTO: InsertProductDTO): Observable<ApiResponse> {
     // Add a new product
     return this.http.post<ApiResponse>(`${this.apiBaseUrl}/products`, insertProductDTO);
@@ -61,5 +61,28 @@ export class ProductService {
     debugger
     return this.http.delete<string>(`${this.apiBaseUrl}/product_images/${id}`);
   }
+  getRecommended(token: string): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiBaseUrl}/products/recommended`, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      })
+    });
+  }
+  getRecommendedForGuest(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiBaseUrl}/products/recommendedForGuest`);
+  }
 }
+
+/*
+  updateUserDetail(token: string, updateUserDTO: UpdateUserDTO): Observable<ApiResponse>  {
+    debugger
+    let userResponse = this.getUserResponseFromLocalStorage();
+    return this.http.put<ApiResponse>(`${this.apiUserDetail}/${userResponse?.id}`,updateUserDTO,{
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      })
+    })
+  }
+*/
 //update.category.admin.component.html
