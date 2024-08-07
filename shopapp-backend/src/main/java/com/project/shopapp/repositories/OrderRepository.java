@@ -20,6 +20,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "OR o.email LIKE %:keyword%) " +
             "ORDER BY o.orderDate DESC")
     Page<Order> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT o FROM Order o WHERE o.phoneNumber LIKE %:phoneNumber% AND o.totalMoney = :totalMoney ORDER BY o.orderDate DESC LIMIT 1")
+    Order findByPhoneNumberAndTotalMoney(@Param("phoneNumber") String phoneNumber, @Param("totalMoney") Float totalMoney);
+//        Order findByPhoneNumberAndTotalMoney(String phoneNumber, Float totalMoney);
 }
 /*
 INSERT INTO orders (user_id, fullname, email, phone_number, address, note, status, total_money)

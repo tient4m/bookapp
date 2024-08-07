@@ -1,6 +1,7 @@
 package com.project.shopapp.configurations;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -13,8 +14,11 @@ import java.util.*;
 
 @Component
 public class VNPayConfig {
+    @Value("${api.prefix}")
+    private static String apiPrefix;
+
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_Returnurl = "${api.prefix}/vnpay-payment";
+    public static String vnp_Returnurl = "/api/v1/vnpay-payment";
     public static String vnp_TmnCode = "672RQ7FP";
     public static String vnp_HashSecret = "3A9NWS56SZIRQ08GI1IMAN3RTMQHAOOV";
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";

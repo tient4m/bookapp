@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
+import { VnpayService } from '../../../services/vnpay.servive';
 
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -52,7 +53,8 @@ export class DetailOrderAdminComponent implements OnInit {
   private orderService = inject(OrderService);
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private vnpayService: VnpayService
   ) { }
 
   ngOnInit(): void {

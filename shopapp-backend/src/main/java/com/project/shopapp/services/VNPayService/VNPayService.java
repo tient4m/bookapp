@@ -2,6 +2,7 @@ package com.project.shopapp.services.VNPayService;
 
 import com.project.shopapp.configurations.VNPayConfig;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -12,6 +13,8 @@ import java.util.*;
 
 @Service
 public class VNPayService implements IVNPayService {
+    @Value("${api.urlWeb}")
+    private String vnpayUrlReturn;
 
     @Override
     public String createOrder(int total, String orderInfor, String urlReturn){
@@ -37,7 +40,7 @@ public class VNPayService implements IVNPayService {
         vnp_Params.put("vnp_Locale", locate);
 
         urlReturn += VNPayConfig.vnp_Returnurl;
-        vnp_Params.put("vnp_ReturnUrl", urlReturn);
+        vnp_Params.put("vnp_ReturnUrl", vnpayUrlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));

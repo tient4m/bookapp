@@ -183,4 +183,14 @@ public class OrderController {
                 .data(orderListResponse)
                 .build());
     }
+
+    @PutMapping("/cancelOrderForVnpay")
+    public ResponseEntity<ResponseObject> cancelOrderForVnpay(@RequestParam String phoneNumber,
+                                                              @RequestParam Float totalMoney) throws Exception {
+        orderService.cancelOrderForVnpay(phoneNumber, totalMoney);
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Cancel order for Vnpay successfully")
+                .status(HttpStatus.OK)
+                .build());
+    }
 }

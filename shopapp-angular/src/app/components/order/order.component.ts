@@ -18,6 +18,8 @@ import { inject } from '@angular/core';
 import { CouponService } from '../../services/coupon.service';
 import { ApiResponse } from '../../responses/api.response';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { VnpayService } from '../../services/vnpay.servive';
+import { VnpayDTO } from '../../dtos/vnpay/vnpay.dto';
 
 @Component({
   selector: 'app-order',
@@ -28,12 +30,12 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
     FooterComponent,
     HeaderComponent,
     CommonModule,
-    FormsModule,    
+    FormsModule,
     ReactiveFormsModule,
   ]
 })
 
-export class OrderComponent implements OnInit{
+export class OrderComponent implements OnInit {
   private couponService = inject(CouponService);
   private cartService = inject(CartService);
   private productService = inject(ProductService);
@@ -41,6 +43,7 @@ export class OrderComponent implements OnInit{
   private tokenService = inject(TokenService);
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
+  private vnpayService = inject(VnpayService);
 
   orderForm: FormGroup; // Đối tượng FormGroup để quản lý dữ liệu của form
   cartItems: { product: Product, quantity: number }[] = [];
@@ -64,6 +67,7 @@ export class OrderComponent implements OnInit{
   };
 
   constructor() {
+
     // Tạo FormGroup và các FormControl tương ứng
     this.orderForm = this.formBuilder.group({
       fullname: ['', Validators.required], // fullname là FormControl bắt buộc      
@@ -73,26 +77,32 @@ export class OrderComponent implements OnInit{
       note: [''],
       couponCode: [''],
       shipping_method: ['express'],
-      payment_method: ['cod']
+      payment_method: ['']
     });
+
   }
-  
-  ngOnInit(): void {  
+
+  ngOnInit(): void {
+    debugger
+    this.vnpayService.cancelOrderForVnpay("0329335627", 600000).subscribe(data => {
+      console.log(data);
+    })
     debugger
     //this.cartService.clearCart();
-    this.orderData.user_id = this.tokenService.getUserId();    
+
+    this.orderData.user_id = this.tokenService.getUserId();
     // Lấy danh sách sản phẩm từ giỏ hàng
     debugger
     this.cart = this.cartService.getCart();
     const productIds = Array.from(this.cart.keys()); // Chuyển danh sách ID từ Map giỏ hàng    
 
     // Gọi service để lấy thông tin sản phẩm dựa trên danh sách ID
-    debugger    
-    if(productIds.length === 0) {
+    debugger
+    if (productIds.length === 0) {
       return;
-    }    
+    }
     this.productService.getProductsByIds(productIds).subscribe({
-      next: (apiResponse: ApiResponse) => {            
+      next: (apiResponse: ApiResponse) => {
         debugger
         const products: Product[] = apiResponse.data
         // Lấy thông tin sản phẩm và số lượng từ danh sách sản phẩm và giỏ hàng
@@ -101,7 +111,7 @@ export class OrderComponent implements OnInit{
           const product = products.find((p) => p.id === productId);
           if (product) {
             product.thumbnail = `${environment.apiBaseUrl}/products/images/${product.thumbnail}`;
-          }          
+          }
           return {
             product: product!,
             quantity: this.cart.get(productId)!
@@ -117,7 +127,7 @@ export class OrderComponent implements OnInit{
         debugger;
         console.error(error?.error?.message ?? '');
       }
-    });        
+    });
   }
   placeOrder() {
     debugger
@@ -141,14 +151,19 @@ export class OrderComponent implements OnInit{
         product_id: cartItem.product.id,
         quantity: cartItem.quantity
       }));
-      this.orderData.total_money =  this.totalAmount;
+      this.orderData.total_money = this.totalAmount;
+      if (this.orderData.payment_method === 'VNPAY') {
+        this.submitOrder(this.totalAmount, this.orderData.phone_number);
+        // return;
+      }
       // Dữ liệu hợp lệ, bạn có thể gửi đơn hàng đi
       this.orderService.placeOrder(this.orderData).subscribe({
         next: (response: ApiResponse) => {
-          debugger;          
+          debugger;
           console.error('Đặt hàng thành công');
           this.cartService.clearCart();
           this.router.navigate(['/']);
+          debugger
         },
         complete: () => {
           debugger;
@@ -162,9 +177,10 @@ export class OrderComponent implements OnInit{
     } else {
       // Hiển thị thông báo lỗi hoặc xử lý khác
       console.error('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.');
-    }        
+    }
+
   }
-    
+
   decreaseQuantity(index: number): void {
     if (this.cartItems[index].quantity > 1) {
       this.cartItems[index].quantity--;
@@ -173,20 +189,20 @@ export class OrderComponent implements OnInit{
       this.calculateTotal();
     }
   }
-  
+
   increaseQuantity(index: number): void {
-    this.cartItems[index].quantity++;   
+    this.cartItems[index].quantity++;
     // Cập nhật lại this.cart từ this.cartItems
     this.updateCartFromCartItems();
     this.calculateTotal();
-  }    
-  
+  }
+
   // Hàm tính tổng tiền
   calculateTotal(): void {
-      this.totalAmount = this.cartItems.reduce(
-          (total, item) => total + item.product.price * item.quantity,
-          0
-      );
+    this.totalAmount = this.cartItems.reduce(
+      (total, item) => total + item.product.price * item.quantity,
+      0
+    );
   }
   confirmDelete(index: number): void {
     if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
@@ -220,4 +236,13 @@ export class OrderComponent implements OnInit{
     });
     this.cartService.setCart(this.cart);
   }
+  submitOrder(amount: number, phoneNumber: String): void {
+    this.vnpayService.vnpay(amount, phoneNumber).subscribe((response: ApiResponse) => {
+      console.log(response);
+      window.location.href = response.data;
+    }, error => {
+      console.error(error);
+    });
+  }
+
 }

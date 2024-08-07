@@ -218,4 +218,19 @@ public class OrderService implements IOrderService{
     public Page<Order> getOrdersByKeyword(String keyword, Pageable pageable) {
         return orderRepository.findByKeyword(keyword, pageable);
     }
+
+    @Override
+    public void cancelOrderForVnpay(String phoneNumber, Float totalMoney) {
+        Order order = orderRepository.findByPhoneNumberAndTotalMoney(phoneNumber,totalMoney);
+        if (order == null) {
+            try {
+                throw new DataNotFoundException("Cannot find order with phoneNumber: " + phoneNumber + " and totalMoney: " + totalMoney);
+            } catch (DataNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+    }
 }
