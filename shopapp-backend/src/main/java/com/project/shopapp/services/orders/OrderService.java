@@ -67,15 +67,18 @@ public class OrderService implements IOrderService{
 
             // Lấy thông tin sản phẩm từ cartItemDTO
             Long productId = cartItemDTO.getProductId();
-            int quantity = cartItemDTO.getQuantity();
+
 
             // Tìm thông tin sản phẩm từ cơ sở dữ liệu (hoặc sử dụng cache nếu cần)
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new DataNotFoundException("Product not found with id: " + productId));
 
             // Đặt thông tin cho OrderDetail
+            if (product.getQuantity() < cartItemDTO.getQuantity()) {
+                throw new DataNotFoundException("Product out of stock");
+            }
+            orderDetail.setNumberOfProducts(cartItemDTO.getQuantity());
             orderDetail.setProduct(product);
-            orderDetail.setNumberOfProducts(quantity);
             // Các trường khác của OrderDetail nếu cần
             orderDetail.setPrice(product.getPrice());
 

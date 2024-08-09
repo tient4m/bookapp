@@ -20,6 +20,8 @@ import { ApiResponse } from '../../responses/api.response';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { VnpayService } from '../../services/vnpay.servive';
 import { VnpayDTO } from '../../dtos/vnpay/vnpay.dto';
+import { NotificationService } from '../../services/notification.service';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-order',
@@ -36,6 +38,7 @@ import { VnpayDTO } from '../../dtos/vnpay/vnpay.dto';
 })
 
 export class OrderComponent implements OnInit {
+  private notificationService = inject(NotificationService);
   private couponService = inject(CouponService);
   private cartService = inject(CartService);
   private productService = inject(ProductService);
@@ -83,10 +86,7 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    debugger
-    this.vnpayService.cancelOrderForVnpay("0329335627", 600000).subscribe(data => {
-      console.log(data);
-    })
+
     debugger
     //this.cartService.clearCart();
 
@@ -129,6 +129,7 @@ export class OrderComponent implements OnInit {
       }
     });
   }
+
   placeOrder() {
     debugger
     if (this.orderForm.errors == null) {
@@ -154,15 +155,18 @@ export class OrderComponent implements OnInit {
       this.orderData.total_money = this.totalAmount;
       if (this.orderData.payment_method === 'VNPAY') {
         this.submitOrder(this.totalAmount, this.orderData.phone_number);
-        // return;
       }
-      // Dữ liệu hợp lệ, bạn có thể gửi đơn hàng đi
       this.orderService.placeOrder(this.orderData).subscribe({
         next: (response: ApiResponse) => {
           debugger;
-          console.error('Đặt hàng thành công');
-          this.cartService.clearCart();
-          this.router.navigate(['/']);
+          setTimeout(() => {
+            this.notificationService.showSuccess("Đặt hàng thành công");
+          }, 500);
+          setTimeout(() => {
+            this.cartService.clearCart();
+            this.router.navigate(['/']);
+            debugger;
+          }, 3000);
           debugger
         },
         complete: () => {
@@ -171,7 +175,7 @@ export class OrderComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           debugger;
-          console.error(`Lỗi khi đặt hàng: ${error?.error?.message ?? ''}`);
+          this.notificationService.showError(error?.error?.message ?? 'An error occurred while placing the order');
         },
       });
     } else {
@@ -244,5 +248,4 @@ export class OrderComponent implements OnInit {
       console.error(error);
     });
   }
-
 }

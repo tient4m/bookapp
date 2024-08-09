@@ -53,12 +53,19 @@ public class OrderController {
         if(orderDTO.getUserId() == null) {
             orderDTO.setUserId(loginUser.getId());
         }
-        Order orderResponse = orderService.createOrder(orderDTO);
-        return ResponseEntity.ok(ResponseObject.builder()
-                        .message("Insert order successfully")
-                        .data(orderResponse)
-                        .status(HttpStatus.OK)
-                        .build());
+        try {
+            Order orderResponse = orderService.createOrder(orderDTO);
+            return ResponseEntity.ok(ResponseObject.builder()
+                    .message("Insert order successfully")
+                    .data(orderResponse)
+                    .status(HttpStatus.OK)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(e.getMessage())
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build());
+        }
     }
     @GetMapping("/user/{user_id}") // Thêm biến đường dẫn "user_id"
     //GET http://localhost:8088/api/v1/orders/user/4

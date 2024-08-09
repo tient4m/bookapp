@@ -29,6 +29,7 @@ public class ProductResponse extends BaseResponse {
     private Float rate;
     // Thêm trường totalPages
     private int totalPages;
+    private int quantity;
 
     @JsonProperty("product_images")
     private List<ProductImage> productImages = new ArrayList<>();
@@ -58,6 +59,7 @@ public class ProductResponse extends BaseResponse {
                 .categoryId(product.getCategory().getId())
                 .productImages(product.getProductImages())
                 .rate(product.getRate())
+                .quantity(product.getQuantity())
                 .totalPages(0)
                 .build();
         productResponse.setCreatedAt(product.getCreatedAt());
