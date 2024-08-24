@@ -1,9 +1,7 @@
 package com.project.shopapp.services.comment;
 
 import com.github.javafaker.Faker;
-import com.project.shopapp.controllers.ProductController;
 import com.project.shopapp.dtos.CommentDTO;
-import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.*;
 import com.project.shopapp.models.Comment;
@@ -14,6 +12,8 @@ import com.project.shopapp.responses.comment.CommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +74,19 @@ public class CommentService implements ICommentService{
     @Override
     public List<CommentResponse> getCommentsByProduct(Long productId) {
         List<Comment> comments = commentRepository.findByProductId(productId);
+        return comments.stream()
+                .map(comment -> CommentResponse.fromComment(comment))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public Page<CommentResponse> getCommentsByProductPage(Long productId, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findByProductId(productId, pageable);
+        return comments.map(comment -> CommentResponse.fromComment(comment));
+    }
+
+
+    public List<CommentResponse> getCommentsByUser(Long userId) {
+        List<Comment> comments = commentRepository.findByUserId(userId);
         return comments.stream()
                 .map(comment -> CommentResponse.fromComment(comment))
                 .collect(Collectors.toList());

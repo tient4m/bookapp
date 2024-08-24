@@ -212,9 +212,21 @@ public class OrderService implements IOrderService{
         }
     }
     @Override
-    public List<OrderResponse> findByUserId(Long userId) {
+    public List<OrderResponse> findByUserId(Long userId, int page, int size) {
+        // Lấy danh sách các đơn hàng từ repository
         List<Order> orders = orderRepository.findByUserId(userId);
-        return orders.stream().map(order -> OrderResponse.fromOrder(order)).toList();
+
+        // Chuyển đổi danh sách Order thành OrderResponse
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(order -> OrderResponse.fromOrder(order))
+                .toList();
+
+        // Tính toán vị trí bắt đầu và kết thúc của trang
+        int start = Math.min(page * size, orderResponses.size());
+        int end = Math.min((page + 1) * size, orderResponses.size());
+
+        // Lấy danh sách các đơn hàng trong phạm vi phân trang
+        return orderResponses.subList(start, end);
     }
 
     @Override

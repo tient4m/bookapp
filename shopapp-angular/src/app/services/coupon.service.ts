@@ -16,6 +16,7 @@ export class CouponService {
 
   constructor(private http: HttpClient) { }
   calculateCouponValue(couponCode: string, totalAmount: number): Observable<ApiResponse> {
+    debugger
     const url = `${this.apiBaseUrl}/coupons/calculate`;
     const params = new HttpParams()
       .set('couponCode', couponCode)
@@ -23,5 +24,5 @@ export class CouponService {
 
     return this.http.get<ApiResponse>(url, { params });
   }
-  
+
 }

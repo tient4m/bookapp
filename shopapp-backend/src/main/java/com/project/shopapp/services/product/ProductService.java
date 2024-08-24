@@ -13,21 +13,10 @@ import com.project.shopapp.responses.product.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +44,7 @@ public class ProductService implements IProductService{
                 .thumbnail(productDTO.getThumbnail())
                 .description(productDTO.getDescription())
                 .category(existingCategory)
+                .quantity(productDTO.getQuantity())
                 .build();
         return productRepository.save(newProduct);
     }
@@ -111,6 +101,9 @@ public class ProductService implements IProductService{
             if(productDTO.getThumbnail() != null &&
                     !productDTO.getThumbnail().isEmpty()) {
                 existingProduct.setDescription(productDTO.getThumbnail());
+            }
+            if(productDTO.getQuantity() >= 0) {
+                existingProduct.setQuantity(productDTO.getQuantity());
             }
             return productRepository.save(existingProduct);
         }
@@ -242,6 +235,11 @@ public class ProductService implements IProductService{
         }
     }
     @Override
+    @Transactional
+    public void deleteAllProducts() {
+        productRepository.deleteAll();
+    }
+    @Override
     public List<ProductResponse> findAllRecommendedBooks(String token) throws DataNotFoundException {
         List<Product> products = new ArrayList<>();
         if (token == null) {
@@ -254,6 +252,9 @@ public class ProductService implements IProductService{
         User currentUser = userRepository.findByPhoneNumber(jwtTokenUtils.extractPhoneNumber(extractedToken))
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with token: " + extractedToken));
         products = collaborativeFilteringRecommender.recommendedBooks(currentUser.getId());
+        if (products.size() < 4) {
+            products.addAll(productRepository.findTop10ByOrderByRateDesc());
+        }
 //        if (books.size() < MIN_OF_RECOMMENDED_BOOKS) {
 //            books.addAll(getDao().findAllBooksByCategoriesAndLimit(
 //                    userReadingInfoService.findUserReadingInfo().getUserBookCategories().stream().map(

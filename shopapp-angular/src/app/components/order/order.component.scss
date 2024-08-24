@@ -1,11 +1,11 @@
 @import '../../styles/shared-styles.scss';
 
 .container {
-    color: white;
+    color: black;
 }
 
 .intro-section {
-    color: white;
+    color: black;
     padding: 20px;
     text-align: center;
 }
@@ -17,24 +17,24 @@
 .form-control {
     background-color: $shopapp-background-color;
     border: 1px solid rgb(29, 33, 54);
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 .form-control:focus {
-    border-color: white;
+    border-color: rgb(0, 0, 0);
     background-color: $shopapp-background-color;
 }
 
 .form-label {
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 .product-header {
-    color: $shopapp-tint-color;
+    color: black;
 }
 
 .product-order {
-    color: $shopapp-title-color;
+    color: black;
 }
 
 table {
@@ -66,20 +66,20 @@ td {
 }
 
 .product-name {
-    color: white;
+    color: rgb(0, 0, 0);
     margin-right: 10px;
     text-align: left;
 }
 
 .btn-gradient {
     background: linear-gradient(to right, $shopapp-tint-color, $shopapp-color);
-    color: white;
+    color: rgb(0, 0, 0);
     border-radius: 30px;
     width: 200px;
 }
 
 .border-wrapper {
-    border: 1px solid white;
+    border: 1px solid rgb(0, 0, 0);
 }
 
 .product-quantity {
@@ -92,7 +92,7 @@ td {
 .product-quantity button {
     background-color: transparent;
     border: none;
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 16px;
     cursor: pointer;
 }
@@ -100,7 +100,7 @@ td {
 .product-quantity input {
     background-color: transparent;
     border: none;
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 16px;
     text-align: center;
     width: 40px;

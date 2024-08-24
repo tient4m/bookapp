@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { Location } from '@angular/common';
 import { OrderResponse } from '../../../responses/order/order.response';
 import { OrderService } from '../../../services/order.service';
-import { CommonModule,DOCUMENT } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiResponse } from '../../../responses/api.response';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
@@ -17,20 +17,20 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
   templateUrl: './order.admin.component.html',
   styleUrls: ['./order.admin.component.scss'],
   standalone: true,
-  imports: [   
+  imports: [
     CommonModule,
     FormsModule,
   ]
 })
-export class OrderAdminComponent implements OnInit{  
+export class OrderAdminComponent implements OnInit {
   orders: OrderResponse[] = [];
   currentPage: number = 0;
   itemsPerPage: number = 12;
   pages: number[] = [];
-  totalPages:number = 0;
-  keyword:string = "";
+  totalPages: number = 0;
+  keyword: string = "";
   visiblePages: number[] = [];
-  localStorage?:Storage;
+  localStorage?: Storage;
 
   constructor(
     private orderService: OrderService,
@@ -43,7 +43,7 @@ export class OrderAdminComponent implements OnInit{
   }
   ngOnInit(): void {
     debugger
-    this.currentPage = Number(this.localStorage?.getItem('currentOrderAdminPage')) || 0; 
+    this.currentPage = Number(this.localStorage?.getItem('currentOrderAdminPage')) || 0;
     this.getAllOrders(this.keyword, this.currentPage, this.itemsPerPage);
   }
   searchOrders() {
@@ -57,7 +57,7 @@ export class OrderAdminComponent implements OnInit{
     debugger
     this.orderService.getAllOrders(keyword, page, limit).subscribe({
       next: (apiResponse: ApiResponse) => {
-        debugger        
+        debugger
         this.orders = apiResponse.data.orders;
         this.totalPages = apiResponse.data.totalPages;
         this.visiblePages = this.generateVisiblePageArray(this.currentPage, this.totalPages);
@@ -69,12 +69,12 @@ export class OrderAdminComponent implements OnInit{
         debugger;
         console.error(error?.error?.message ?? '');
       }
-    });    
+    });
   }
   onPageChange(page: number) {
     debugger;
     this.currentPage = page < 0 ? 0 : page;
-    this.localStorage?.setItem('currentOrderAdminPage', String(this.currentPage));         
+    this.localStorage?.setItem('currentOrderAdminPage', String(this.currentPage));
     this.getAllOrders(this.keyword, this.currentPage, this.itemsPerPage);
   }
 
@@ -90,32 +90,32 @@ export class OrderAdminComponent implements OnInit{
     }
 
     return new Array(endPage - startPage + 1).fill(0)
-        .map((_, index) => startPage + index);
+      .map((_, index) => startPage + index);
   }
 
-  deleteOrder(id:number) {
+  deleteOrder(id: number) {
     const confirmation = window
       .confirm('Are you sure you want to delete this order?');
     if (confirmation) {
       debugger
       this.orderService.deleteOrder(id).subscribe({
         next: (response: ApiResponse) => {
-          debugger 
-          location.reload();          
+          debugger
+          location.reload();
         },
         complete: () => {
-          debugger;          
+          debugger;
         },
         error: (error: HttpErrorResponse) => {
           debugger;
           console.error(error?.error?.message ?? '');
         }
-      });    
+      });
     }
   }
-  viewDetails(order:OrderResponse) {
+  viewDetails(order: OrderResponse) {
     debugger
     this.router.navigate(['/admin/orders', order.id]);
   }
-  
+
 }

@@ -52,6 +52,7 @@ public class WebSecurityConfig {
                                     //healthcheck
                                     String.format("%s/healthcheck/**", apiPrefix),
                                     String.format("%s/orders/cancelOrderForVnpay**", apiPrefix),
+                                    String.format("%s/rates**", apiPrefix),
                                     //swagger
                                     //"/v3/api-docs",
                                     //"/v3/api-docs/**",

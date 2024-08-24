@@ -15,7 +15,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
   templateUrl: './insert.product.admin.component.html',
   styleUrls: ['./insert.product.admin.component.scss'],
   standalone: true,
-  imports: [   
+  imports: [
     CommonModule,
     FormsModule,
   ]
@@ -26,20 +26,21 @@ export class InsertProductAdminComponent implements OnInit {
     price: 0,
     description: '',
     category_id: 1,
-    images: []
+    images: [],
+    quantity: 1,
   };
   categories: Category[] = []; // Dữ liệu động từ categoryService
-  constructor(    
+  constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private categoryService: CategoryService,    
-    private productService: ProductService,    
+    private categoryService: CategoryService,
+    private productService: ProductService,
   ) {
-    
-  } 
+
+  }
   ngOnInit() {
     this.getCategories(1, 100)
-  } 
+  }
   getCategories(page: number, limit: number) {
     this.categoryService.getCategories(page, limit).subscribe({
       next: (apiResponse: ApiResponse) => {
@@ -67,14 +68,14 @@ export class InsertProductAdminComponent implements OnInit {
     this.insertProductDTO.images = files;
   }
 
-  insertProduct() {    
+  insertProduct() {
     this.productService.insertProduct(this.insertProductDTO).subscribe({
       next: (apiResponse: ApiResponse) => {
         debugger
         if (this.insertProductDTO.images.length > 0) {
           const productId = apiResponse.data.id; // Assuming the response contains the newly created product's ID
           this.productService.uploadImages(productId, this.insertProductDTO.images).subscribe({
-            next: (imageResponse:ApiResponse) => {
+            next: (imageResponse: ApiResponse) => {
               debugger
               // Handle the uploaded images response if needed              
               console.log('Images uploaded successfully:', imageResponse.data);
@@ -85,13 +86,13 @@ export class InsertProductAdminComponent implements OnInit {
               debugger;
               console.error(error?.error?.message ?? '');
             }
-          })          
+          })
         }
       },
       error: (error: HttpErrorResponse) => {
         debugger;
         console.error(error?.error?.message ?? '');
-      } 
-    });    
+      }
+    });
   }
 }

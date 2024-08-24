@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit {
   localStorage?: Storage;
   apiBaseUrl = environment.apiBaseUrl;
 
+
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,

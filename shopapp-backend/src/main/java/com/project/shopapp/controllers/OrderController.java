@@ -69,10 +69,13 @@ public class OrderController {
     }
     @GetMapping("/user/{user_id}") // Thêm biến đường dẫn "user_id"
     //GET http://localhost:8088/api/v1/orders/user/4
-    public ResponseEntity<ResponseObject> getOrders(@Valid @PathVariable("user_id") Long userId) {
+    public ResponseEntity<ResponseObject> getOrders(@Valid @PathVariable("user_id") Long userId,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int limit
+    ) {
         User loginUser = securityUtils.getLoggedInUser();
         boolean isUserIdBlank = userId == null || userId <= 0;
-        List<OrderResponse> orderResponses = orderService.findByUserId(isUserIdBlank ? loginUser.getId() : userId);
+        List<OrderResponse> orderResponses = orderService.findByUserId(isUserIdBlank ? loginUser.getId() : userId, page, limit);
         return ResponseEntity.ok(ResponseObject
                         .builder()
                         .message("Get list of orders successfully")

@@ -1,9 +1,24 @@
 @import '../../styles/shared-styles.scss';
 
 .container {
-    color: white;
+    color: rgb(0, 0, 0);
     height: 100vh;
 }
+
+.password-toggle {
+    color: black !important;
+    /* Thiết lập màu đen cho biểu tượng */
+    cursor: pointer;
+    /* Thay đổi con trỏ thành con trỏ chỉ tay khi hover */
+    transition: color 0.3s ease;
+    /* Thêm hiệu ứng chuyển đổi màu mượt mà */
+}
+
+.password-toggle:hover {
+    color: #333;
+    /* Màu đen đậm hơn khi hover (tuỳ chọn) */
+}
+
 .login-form {
     background-color: $shopapp-background-color;
     border-radius: 10px;
@@ -13,23 +28,26 @@
     align-items: center;
     justify-content: center;
 }
+
 .login-header {
     text-align: center;
-    color: $shopapp-title-color;
+    color: black;
     margin-bottom: 20px;
 }
+
 .form-control {
     background-color: transparent;
     border: none;
-    color: white;
+    color: rgb(0, 0, 0);
 }
+
 .form-control:focus {
-    color: white;
+    color: rgb(0, 26, 255);
     background-color: transparent;
     outline: none;
-    border-color: transparent;    
+    border-color: transparent;
 }
-  
+
 .divider-nospace {
     border-top: 1px solid white;
 }
@@ -37,6 +55,7 @@
 .password-field {
     position: relative;
 }
+
 .password-toggle {
     position: absolute;
     top: 50%;
@@ -45,6 +64,7 @@
     color: $shopapp-title-color;
     cursor: pointer;
 }
+
 .checkbox-text {
     color: rgb(243, 165, 42);
     display: flex;
@@ -52,6 +72,7 @@
     align-items: center;
     margin-top: 10px;
 }
+
 /* Màu checkbox khi được chọn */
 .checkbox-text input[type="checkbox"]:checked {
     border-color: white;
@@ -63,13 +84,14 @@
 }
 
 .register-link {
-    color: $shopapp-title-color;
+    color: rgb(25, 0, 255);
     text-decoration: none;
 }
+
 .access-right {
     margin-top: 20px;
     width: 200px;
-    color: white;
+    color: rgb(0, 0, 0);
     background-color: $shopapp-background-color !important;
     border: 1px solid $shopapp-tint-color;
 }
@@ -97,13 +119,14 @@
 
 .login-button {
     background: linear-gradient(to right, $shopapp-tint-color, $shopapp-color);
-    color: white;
+    color: rgb(0, 0, 0);
     border-radius: 30px;
     width: 100%;
     padding: 10px 0;
     margin-top: 20px;
     border: none;
 }
+
 .divider {
     height: 1px;
     background-color: rgb(243, 165, 42);

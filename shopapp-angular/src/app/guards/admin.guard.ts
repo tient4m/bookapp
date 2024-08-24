@@ -2,21 +2,23 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, CanActivateFn } from '@angular/router';
 import { Router } from '@angular/router'; // Đảm bảo bạn đã import Router ở đây.
 import { inject } from '@angular/core';
-import { of,Observable } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { UserResponse } from '../responses/user/user.response';
 import { TokenService } from '../services/token.service';
+import { NotificationService } from '../services/notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminGuard {
-  userResponse?:UserResponse | null;
+  userResponse?: UserResponse | null;
+  private notificationService = inject(NotificationService);
   constructor(
-    private tokenService: TokenService, 
+    private tokenService: TokenService,
     private router: Router,
-    private userService:UserService 
-  ) {}
+    private userService: UserService
+  ) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const isTokenExpired = this.tokenService.isTokenExpired();
@@ -29,14 +31,17 @@ export class AdminGuard {
     } else {
       // Nếu không authenticated, bạn có thể redirect hoặc trả về một UrlTree khác.
       // Ví dụ trả về trang login:
-      this.router.navigate(['/login']);
+      setTimeout(() => {
+        this.notificationService.showError("Bạn không có quyền truy cập trang ADMIN");
+      }, 500);
+      this.router.navigate(['']);
       return false;
     }
-  }  
+  }
 }
 
 export const AdminGuardFn: CanActivateFn = (
-  next: ActivatedRouteSnapshot, 
+  next: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
 ): boolean => {
   debugger

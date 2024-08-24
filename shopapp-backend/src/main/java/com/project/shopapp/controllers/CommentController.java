@@ -1,5 +1,5 @@
 package com.project.shopapp.controllers;
-import com.github.javafaker.Faker;
+
 import com.project.shopapp.components.SecurityUtils;
 import com.project.shopapp.dtos.*;
 import com.project.shopapp.models.User;
@@ -9,6 +9,9 @@ import com.project.shopapp.services.comment.CommentService;
 import com.project.shopapp.services.product.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -84,6 +87,7 @@ public class CommentController {
                 ResponseObject.builder()
                         .message("Insert comment successfully")
                         .status(HttpStatus.OK)
+                        .data(commentDTO.getContent())
                         .build());
     }
     @PostMapping("/generateFakeComments")
@@ -94,6 +98,33 @@ public class CommentController {
                 .message("Insert fake comments succcessfully")
                 .data(null)
                 .status(HttpStatus.OK)
+                .build());
+    }
+
+    @GetMapping("/user/{user_id}")
+    public ResponseEntity<ResponseObject> getCommentsByUser(
+            @PathVariable("user_id") Long userId
+    ) {
+        List<CommentResponse> commentResponses = commentService.getCommentsByUser(userId);
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Get comments by user successfully")
+                .status(HttpStatus.OK)
+                .data(commentResponses)
+                .build());
+    }
+
+    @GetMapping("/product")
+    ResponseEntity<?> getCommentsByProductPage(
+            @RequestParam Long productId,
+            @RequestParam int page,
+            @RequestParam int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CommentResponse> commentResponses = commentService.getCommentsByProductPage(productId, pageable);
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Get comments by product successfully")
+                .status(HttpStatus.OK)
+                .data(commentResponses)
                 .build());
     }
 }

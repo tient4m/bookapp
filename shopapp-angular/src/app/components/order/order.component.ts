@@ -86,7 +86,7 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.couponApplied = false;
     debugger
     //this.cartService.clearCart();
 
@@ -227,7 +227,8 @@ export class OrderComponent implements OnInit {
       this.couponService.calculateCouponValue(couponCode, this.totalAmount)
         .subscribe({
           next: (apiResponse: ApiResponse) => {
-            this.totalAmount = apiResponse.data;
+            debugger
+            this.totalAmount = apiResponse.data.result;
             this.couponApplied = true;
           }
         });

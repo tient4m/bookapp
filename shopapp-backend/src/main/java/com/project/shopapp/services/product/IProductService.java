@@ -6,6 +6,7 @@ import com.project.shopapp.responses.product.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import com.project.shopapp.models.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,5 +32,9 @@ public interface IProductService {
     Product unlikeProduct(Long userId, Long productId) throws Exception;
     List<ProductResponse> findFavoriteProductsByUserId(Long userId) throws Exception;
     void generateFakeLikes() throws Exception;
+
+    @Transactional
+    void deleteAllProducts();
+
     List<ProductResponse> findAllRecommendedBooks(String token) throws DataNotFoundException;
 }

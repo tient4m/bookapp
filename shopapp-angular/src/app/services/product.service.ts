@@ -6,6 +6,7 @@ import { Product } from '../models/product';
 import { UpdateProductDTO } from '../dtos/product/update.product.dto';
 import { InsertProductDTO } from '../dtos/product/insert.product.dto';
 import { ApiResponse } from '../responses/api.response';
+import { CommentDto } from '../dtos/product/comment.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,28 @@ export class ProductService {
     };
     return this.http.get<ApiResponse>(`${this.apiBaseUrl}/products`, { params });
   }
+  insertRate(productId: number, rate: number, userId: number): Observable<ApiResponse> {
+    const params = new HttpParams()
+      .set('userId', userId.toString())
+      .set('productId', productId.toString())
+      .set('rate', rate.toString());
+
+    return this.http.post<ApiResponse>(`${this.apiBaseUrl}/rates`, {}, { params });
+  }
+
+  insertComment(commentDto: CommentDto, token: string): Observable<ApiResponse> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+    debugger
+    console.log('Authorization Header:', `Bearer ${token}`);
+    console.log(headers);
+    // Gửi yêu cầu POST đến API để chèn bình luận
+    return this.http.post<ApiResponse>(`${this.apiBaseUrl}/comments`, commentDto, { headers: headers });
+  }
+
+
 
   getDetailProduct(productId: number): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.apiBaseUrl}/products/${productId}`);
@@ -70,6 +93,13 @@ export class ProductService {
   }
   getRecommendedForGuest(): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.apiBaseUrl}/products/recommendedForGuest`);
+  }
+  getIsRate(productId: number, userId: number): Observable<ApiResponse> {
+    const params = new HttpParams()
+      .set('userId', userId.toString())
+      .set('productId', productId.toString());
+    debugger
+    return this.http.get<ApiResponse>(`${this.apiBaseUrl}/rates/isRate`, { params });
   }
 }
 

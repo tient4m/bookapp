@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiResponse } from '../../responses/api.response';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { LoginEmailDTO } from '../../dtos/user/login.email.dto';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +30,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
     FormsModule
   ]
 })
-export class LoginComponent implements OnInit{
+export class LoginComponent implements OnInit {
   @ViewChild('loginForm') loginForm!: NgForm;
 
   /*
@@ -72,7 +73,7 @@ export class LoginComponent implements OnInit{
   ngOnInit() {
     // Gọi API lấy danh sách roles và lưu vào biến roles
     debugger
-    this.roleService.getRoles().subscribe({      
+    this.roleService.getRoles().subscribe({
       next: (apiResponse: ApiResponse) => { // Sử dụng kiểu Role[]
         debugger
         const roles = apiResponse.data
@@ -81,71 +82,93 @@ export class LoginComponent implements OnInit{
       },
       complete: () => {
         debugger
-      },  
+      },
       error: (error: HttpErrorResponse) => {
         debugger;
         console.error(error?.error?.message ?? '');
-      } 
+      }
     });
   }
   createAccount() {
     debugger
     // Chuyển hướng người dùng đến trang đăng ký (hoặc trang tạo tài khoản)
-    this.router.navigate(['/register']); 
+    this.router.navigate(['/register']);
   }
   login() {
-    const message = `phone: ${this.phoneNumber}` +
-      `password: ${this.password}`;
-    //console.error(message);
     debugger
+    const isEmailLogin = this.phoneNumber.includes('@');
 
-    const loginDTO: LoginDTO = {
-      phone_number: this.phoneNumber,
-      password: this.password,
-      role_id: this.selectedRole?.id ?? 1
-    };
-    this.userService.login(loginDTO).subscribe({
-      next: (apiResponse: ApiResponse) => {
-        debugger;
-        const { token } = apiResponse.data;
-        if (this.rememberMe) {          
-          this.tokenService.setToken(token);
+    if (isEmailLogin) {
+      // Logic đăng nhập bằng email
+      const loginEmailDTO: LoginEmailDTO = {
+        email: this.phoneNumber, // Chuyển đổi `phoneNumber` thành email
+        password: this.password,
+        role_id: this.selectedRole?.id ?? 1
+      };
+
+      this.userService.loginWithEmail(loginEmailDTO).subscribe({
+        next: (apiResponse: ApiResponse) => {
           debugger;
-          this.userService.getUserDetail(token).subscribe({
-            next: (apiResponse2: ApiResponse) => {
-              debugger
-              this.userResponse = {
-                ...apiResponse2.data,
-                date_of_birth: new Date(apiResponse2.data.date_of_birth),
-              };    
-              this.userService.saveUserResponseToLocalStorage(this.userResponse); 
-              if(this.userResponse?.role.name == 'admin') {
-                this.router.navigate(['/admin']);    
-              } else if(this.userResponse?.role.name == 'user') {
-                this.router.navigate(['/']);                      
-              }
-              
-            },
-            complete: () => {
-              this.cartService.refreshCart();
-              debugger;
-            },
-            error: (error: HttpErrorResponse) => {
-              debugger;
-              console.error(error?.error?.message ?? '');
-            } 
-          })
-        }                        
-      },
-      complete: () => {
-        debugger;
-      },
-      error: (error: HttpErrorResponse) => {
-        debugger;
-        console.error(error?.error?.message ?? '');
-      } 
-    });
+          const { token } = apiResponse.data;
+          this.handleLoginResponse(token);
+        },
+        error: (error: HttpErrorResponse) => {
+          debugger;
+          console.error(error?.error?.message ?? '');
+        }
+      });
+    } else {
+      // Logic đăng nhập bằng số điện thoại
+      const loginDTO: LoginDTO = {
+        phone_number: this.phoneNumber,
+        password: this.password,
+        role_id: this.selectedRole?.id ?? 1
+      };
+
+      this.userService.login(loginDTO).subscribe({
+        next: (apiResponse: ApiResponse) => {
+          debugger;
+          const { token } = apiResponse.data;
+          this.handleLoginResponse(token);
+        },
+        error: (error: HttpErrorResponse) => {
+          debugger;
+          console.error(error?.error?.message ?? '');
+        }
+      });
+    }
   }
+
+  handleLoginResponse(token: string) {
+    if (this.rememberMe) {
+      this.tokenService.setToken(token);
+      debugger;
+      this.userService.getUserDetail(token).subscribe({
+        next: (apiResponse2: ApiResponse) => {
+          debugger;
+          this.userResponse = {
+            ...apiResponse2.data,
+            date_of_birth: new Date(apiResponse2.data.date_of_birth),
+          };
+          this.userService.saveUserResponseToLocalStorage(this.userResponse);
+          if (this.userResponse?.role.name == 'admin') {
+            this.router.navigate(['/admin']);
+          } else if (this.userResponse?.role.name == 'user') {
+            this.router.navigate(['/']);
+          }
+        },
+        complete: () => {
+          this.cartService.refreshCart();
+          debugger;
+        },
+        error: (error: HttpErrorResponse) => {
+          debugger;
+          console.error(error?.error?.message ?? '');
+        }
+      });
+    }
+  }
+
   togglePassword() {
     this.showPassword = !this.showPassword;
   }

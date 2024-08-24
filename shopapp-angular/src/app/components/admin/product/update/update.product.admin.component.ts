@@ -18,7 +18,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
   templateUrl: './update.product.admin.component.html',
   styleUrls: ['./update.product.admin.component.scss'],
   standalone: true,
-  imports: [   
+  imports: [
     CommonModule,
     FormsModule,
   ]
@@ -36,12 +36,12 @@ export class UpdateProductAdminComponent implements OnInit {
     private productService: ProductService,
     private route: ActivatedRoute,
     private router: Router,
-    private categoryService: CategoryService,    
+    private categoryService: CategoryService,
     private location: Location,
   ) {
     this.productId = 0;
     this.product = {} as Product;
-    this.updatedProduct = {} as Product;  
+    this.updatedProduct = {} as Product;
   }
 
   ngOnInit(): void {
@@ -63,7 +63,7 @@ export class UpdateProductAdminComponent implements OnInit {
       error: (error: HttpErrorResponse) => {
         debugger;
         console.error(error?.error?.message ?? '');
-      } 
+      }
     });
   }
   getProductDetails(): void {
@@ -71,52 +71,54 @@ export class UpdateProductAdminComponent implements OnInit {
       next: (apiResponse: ApiResponse) => {
 
         this.product = apiResponse.data;
-        this.updatedProduct = { ...apiResponse.data };                
-        this.updatedProduct.product_images.forEach((product_image:ProductImage) => {
+        this.updatedProduct = { ...apiResponse.data };
+        this.updatedProduct.product_images.forEach((product_image: ProductImage) => {
           product_image.image_url = `${environment.apiBaseUrl}/products/images/${product_image.image_url}`;
         });
       },
       complete: () => {
-        
+
       },
       error: (error: HttpErrorResponse) => {
         debugger;
         console.error(error?.error?.message ?? '');
-      } 
-    });     
+      }
+    });
   }
   updateProduct() {
     // Implement your update logic here
     const updateProductDTO: UpdateProductDTO = {
+      quantity: this.updatedProduct.quantity,
       name: this.updatedProduct.name,
       price: this.updatedProduct.price,
       description: this.updatedProduct.description,
       category_id: this.updatedProduct.category_id
     };
+    debugger
     this.productService.updateProduct(this.product.id, updateProductDTO).subscribe({
-      next: (apiResponse: ApiResponse) => {  
-        debugger        
+      next: (apiResponse: ApiResponse) => {
+        debugger
       },
       complete: () => {
         debugger;
-        this.router.navigate(['/admin/products']);        
+        this.router.navigate(['/admin/products']);
       },
       error: (error: HttpErrorResponse) => {
         debugger;
         console.error(error?.error?.message ?? '');
-      } 
-    });  
+      }
+    });
   }
   showImage(index: number): void {
     debugger
-    if (this.product && this.product.product_images && 
-        this.product.product_images.length > 0) {
+    if (this.product && this.product.product_images &&
+      this.product.product_images.length > 0) {
       // Đảm bảo index nằm trong khoảng hợp lệ        
       if (index < 0) {
         index = 0;
       } else if (index >= this.product.product_images.length) {
         index = this.product.product_images.length - 1;
-      }        
+      }
       // Gán index hiện tại và cập nhật ảnh hiển thị
       this.currentImageIndex = index;
     }
@@ -125,7 +127,7 @@ export class UpdateProductAdminComponent implements OnInit {
     debugger
     // Gọi khi một thumbnail được bấm
     this.currentImageIndex = index; // Cập nhật currentImageIndex
-  }  
+  }
   nextImage(): void {
     debugger
     this.showImage(this.currentImageIndex + 1);
@@ -134,7 +136,7 @@ export class UpdateProductAdminComponent implements OnInit {
   previousImage(): void {
     debugger
     this.showImage(this.currentImageIndex - 1);
-  }  
+  }
   onFileChange(event: any) {
     // Retrieve selected files from input element
     const files = event.target.files;
@@ -150,28 +152,28 @@ export class UpdateProductAdminComponent implements OnInit {
         debugger
         // Handle the uploaded images response if needed              
         console.log('Images uploaded successfully:', apiResponse);
-        this.images = [];       
+        this.images = [];
         // Reload product details to reflect the new images
-        this.getProductDetails(); 
+        this.getProductDetails();
       },
       error: (error: HttpErrorResponse) => {
         debugger;
         console.error(error?.error?.message ?? '');
-      } 
+      }
     })
   }
   deleteImage(productImage: ProductImage) {
     if (confirm('Are you sure you want to remove this image?')) {
       // Call the removeImage() method to remove the image   
       this.productService.deleteProductImage(productImage.id).subscribe({
-        next:(productImage: ProductImage) => {
-          location.reload();          
-        },        
+        next: (productImage: ProductImage) => {
+          location.reload();
+        },
         error: (error: HttpErrorResponse) => {
           debugger;
           console.error(error?.error?.message ?? '');
-        } 
+        }
       });
-    }   
+    }
   }
 }

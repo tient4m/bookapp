@@ -14,7 +14,10 @@ public interface IOrderService {
     Order getOrderById(Long orderId);
     Order updateOrder(Long id, OrderDTO orderDTO) throws DataNotFoundException;
     void deleteOrder(Long orderId);
-    List<OrderResponse> findByUserId(Long userId);
+//    List<OrderResponse> findByUserId(Long userId);
+
+    List<OrderResponse> findByUserId(Long userId, int page, int size);
+
     Page<Order> getOrdersByKeyword(String keyword, Pageable pageable);
 
     void cancelOrderForVnpay(String phoneNumber, Float totalMoney);
